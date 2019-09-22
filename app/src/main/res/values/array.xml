@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="opciones">
+        <item>Cedula de ciudadania</item>
+        <item>Targeta Identidad</item>
+        <item>Pasaporte</item>
+    </string-array>
+
+    <string-array name="opciones2">
+        <item>Peticion</item>
+        <item>Queja</item>
+        <item>Reclamo</item>
+        <item>Sugerencia</item>
+        <item>Felicitacion</item>
+    </string-array>
+</resources>

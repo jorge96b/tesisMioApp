@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">MioApp</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="perfil">Perfil</string>
+    <string name="saldo">Saldo Tarjeta</string>
+    <string name="viajes_programados">Viajes Programados</string>
+    <string name="Noticias">Noticias</string>
+    <string name="PQRSDF">PQRSDF</string>
+    <string name="cerrar_sesion">Cerrar Sesion</string>
+    <string name="abrir">Abrir</string>
+    <string name="cerrar">Cerrar</string>
+    <string name="iniciar_sesion">Iniciar Sesion</string>
+    <string name="registarse">Registrarse</string>
+    <string name="mejor_uso">Para Mejor Usabilidad</string>
+    <string name="tutoriales">Tutoriales</string>
+    <string name="nombre">Nombre</string>
+    <string name="correo">Correo</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="error">Error</string>
+    <string name="registrando">Registrando Usuario</string>
+    <string name="por_favor_espere">Por favor espera</string>
+    <string name="iniciando_sesion">Iniciando Sesion</string>
+    <string name="title_activity_no_users">NoUsersActivity</string>
+    <string name="cuenta">Cuenta</string>
+    <string name="Estaciones">Estaciones</string>
+    <string name="Paradas">Paradas</string>
+    <string name="puntos_recargas">P. Recargas</string>
+    <string name="puntos_wifi">P. Wifi</string>
+    <string name="buses">Buses</string>
+    <string name="confirm_back">To exit press back one more time</string>
+    <string name="vacio"></string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_users">UsersActivity</string>
+</resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/mapa"
+            android:icon="@drawable/map"
+            android:title="Mapa"/>
+        <item
+            android:id="@+id/saldo"
+            android:icon="@drawable/card"
+            android:title="@string/saldo"/>
+        <item
+            android:id="@+id/noticias"
+            android:icon="@drawable/news"
+            android:title="@string/Noticias" />
+        <item
+            android:id="@+id/pqrsdf"
+            android:icon="@drawable/pqrs"
+            android:title="@string/PQRSDF" />
+        <item
+            android:id="@+id/tutoriales"
+            android:icon="@drawable/ayuda"
+            android:title="@string/tutoriales" />
+    </group>
+
+    <item android:title="@string/mejor_uso">
+        <menu>
+            <item
+                android:id="@+id/iniciar_sesion"
+                android:icon="@drawable/login"
+                android:title="@string/iniciar_sesion"/>
+            <item
+                android:id="@+id/registrarse"
+                android:icon="@drawable/sign_up"
+                android:title="@string/registarse"/>
+        </menu>
+    </item>
+
+</menu>
