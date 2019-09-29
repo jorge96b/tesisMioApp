@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +16,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import android.webkit.WebSettings;
+
+import android.webkit.WebViewClient;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 
 public class TrayectoActivity extends AppCompatActivity  {
 
@@ -26,9 +34,19 @@ public class TrayectoActivity extends AppCompatActivity  {
     @BindView(R.id.textMessage)
     TextView textMessage;
 
-    @BindView(R.id.listview)
-    ListView listView;
 
+    String url = "https://www.google.com/maps/dir/?api=1&origin=Pontificia+Universidad+Javeriana+Cali&destination=00002+Cali+Colombia&travelmode=transit";
+    String[] dir = {
+            "carrera",
+            "calle",
+            "avenida",
+            "diagonal",
+            "transversal","estacion","estación"
+    };
+
+    String tem= "0001.*";
+    String direccion;
+    final Context context = this;
     private List<String> stringList;
     private SpeechAPI speechAPI;
     private VoiceRecorder mVoiceRecorder;
@@ -60,7 +78,7 @@ public class TrayectoActivity extends AppCompatActivity  {
     private final SpeechAPI.Listener mSpeechServiceListener =
             new SpeechAPI.Listener() {
                 @Override
-                public void onSpeechRecognized(final String text, final boolean isFinal) {
+                public void onSpeechRecognized(final String text, final boolean isFinal, final Float stability, final Float confidence) {
                     if (isFinal) {
                         mVoiceRecorder.dismiss();
                     }
@@ -72,6 +90,60 @@ public class TrayectoActivity extends AppCompatActivity  {
                                     textMessage.setText(null);
                                     stringList.add(0,text);
                                     adapter.notifyDataSetChanged();
+                                    mVoiceRecorder.stop();
+                                    mVoiceRecorder.dismiss();
+                                    System.out.println("error" + " "+(1-confidence));
+                                    String[] temText = text.split(" ");
+                                    if(temText.length<=3){
+                                        direccion=text;
+                                    }else{
+                                        for (String s : dir) {
+                                            String replace = tem.replaceAll("0001", s);
+                                            if (text.matches(replace)) {
+                                                direccion = text;
+                                                break;
+                                            } else {
+
+                                                String[] arrOfStr = text.split("a", 2);
+                                                direccion = arrOfStr[1];
+                                            }
+                                        }
+                                    }
+                                    System.out.println("dirreccion"+direccion);
+                                    if(confidence > 0.7){
+                                        WebView myWebView = (WebView) findViewById(R.id.webViewTrayecto);
+                                        WebSettings webSettings = myWebView.getSettings();
+                                        webSettings.setJavaScriptEnabled(true);
+                                        myWebView.setWebViewClient(new WebViewClient());
+                                        String newUrl = url.replaceAll("00002", direccion);
+                                        myWebView.loadUrl(newUrl);
+                                    }else if(confidence > 0.6 && confidence<=0.7){
+                                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                                        // set title
+                                        alertDialogBuilder.setTitle("Quieres ir a "+ direccion);
+
+                                        // set dialog message
+                                        alertDialogBuilder
+                                                .setMessage("teniendo en cuenta que el % de error es  "+ (1-confidence));
+                                        // create alert dialog
+                                        AlertDialog alertDialog = alertDialogBuilder.create();
+
+                                        // show it
+                                        alertDialog.show();
+                                    }else{
+                                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                                        // set title
+                                        alertDialogBuilder.setTitle("Intentalo de nuevo");
+                                                // set dialog message
+                                        alertDialogBuilder
+                                                .setMessage("");
+                                        // create alert dialog
+                                        AlertDialog alertDialog = alertDialogBuilder.create();
+
+                                        // show it
+                                        alertDialog.show();
+                                    }
                                 } else {
                                     textMessage.setText(text);
                                 }
@@ -90,7 +162,6 @@ public class TrayectoActivity extends AppCompatActivity  {
         stringList = new ArrayList<>();
         adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, stringList);
-        listView.setAdapter(adapter);
     }
 
     @Override

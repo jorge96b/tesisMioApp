@@ -61,18 +61,24 @@ public class SpeechAPI {
         @Override
         public void onNext(StreamingRecognizeResponse response) {
             String text = null;
+            float stability = 0;
+            float confidence = 0;
             boolean isFinal = false;
             if (response.getResultsCount() > 0) {
                 final StreamingRecognitionResult result = response.getResults(0);
                 isFinal = result.getIsFinal();
+                stability = result.getStability();
+                System.out.println("Estabilidad"+result.getStability());
                 if (result.getAlternativesCount() > 0) {
                     final SpeechRecognitionAlternative alternative = result.getAlternatives(0);
                     text = alternative.getTranscript();
+                    confidence = alternative.getConfidence();
+                    System.out.println("confidence"+confidence);
                 }
             }
             if (text != null) {
                 for (Listener listener : mListeners) {
-                    listener.onSpeechRecognized(text, isFinal);
+                    listener.onSpeechRecognized(text, isFinal,stability,confidence);
                 }
             }
         }
@@ -198,7 +204,7 @@ public class SpeechAPI {
 
     public interface Listener {
         //Called when a new piece of text was recognized by the Speech API.
-        void onSpeechRecognized(String text, boolean isFinal);
+        void onSpeechRecognized(String text, boolean isFinal, Float stability, Float confidence);
     }
 
     private class AccessTokenTask extends AsyncTask<Void, Void, AccessToken> {
