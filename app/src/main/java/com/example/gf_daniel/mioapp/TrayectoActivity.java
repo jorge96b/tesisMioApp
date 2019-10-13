@@ -1,5 +1,6 @@
 package com.example.gf_daniel.mioapp;
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -50,6 +51,7 @@ public class TrayectoActivity extends AppCompatActivity  {
     private List<String> stringList;
     private SpeechAPI speechAPI;
     private VoiceRecorder mVoiceRecorder;
+    private ProgressDialog progressDialog;
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
 
         @Override
@@ -104,12 +106,15 @@ public class TrayectoActivity extends AppCompatActivity  {
                                                 break;
                                             } else {
 
-                                                String[] arrOfStr = text.split("a", 2);
+                                                String[] arrOfStr = text.split(" a ", 2);
                                                 direccion = arrOfStr[1];
                                             }
                                         }
                                     }
                                     System.out.println("dirreccion"+direccion);
+
+
+                                    progressDialog.dismiss();
                                     if(confidence > 0.7){
                                         WebView myWebView = (WebView) findViewById(R.id.webViewTrayecto);
                                         WebSettings webSettings = myWebView.getSettings();
@@ -155,6 +160,9 @@ public class TrayectoActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        progressDialog= new ProgressDialog(this);
+        progressDialog.setMessage("Escuchando");
+        progressDialog.show();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trayecto);
         ButterKnife.bind(this);
