@@ -99,15 +99,32 @@ public class TrayectoActivity extends AppCompatActivity  {
                                     if(temText.length<=3){
                                         direccion=text;
                                     }else{
-                                        for (String s : dir) {
-                                            String replace = tem.replaceAll("0001", s);
-                                            if (text.matches(replace)) {
-                                                direccion = text;
+                                        direccion= text;
+                                        int bandera = 0;
+                                        while ((direccion.split(" a ")).length>1){
+                                            System.out.println("dirreccion"+direccion);
+                                            for (String s : dir) {
+                                                System.out.println("entro al ciclo"+s);
+                                                String replace = tem.replaceAll("0001", s);
+                                                System.out.println("temp"+replace);
+                                                if (direccion.matches(replace)) {
+                                                    System.out.println("entro aqui"+replace);
+                                                    bandera=1;
+                                                    break;
+                                                }
+                                            }
+                                            if(bandera==1){
+                                                System.out.println("entro aqui 2");
                                                 break;
-                                            } else {
-
-                                                String[] arrOfStr = text.split(" a ", 2);
-                                                direccion = arrOfStr[1];
+                                            }else{
+                                                String[] subText = direccion.split(" a ",2);
+                                                if(subText[1].matches("la.*")){
+                                                    direccion=subText[1];
+                                                    String[] subText1 = direccion.split("la",2);
+                                                    direccion=subText1[1];
+                                                }else{
+                                                    direccion = subText[1];
+                                                }
                                             }
                                         }
                                     }
