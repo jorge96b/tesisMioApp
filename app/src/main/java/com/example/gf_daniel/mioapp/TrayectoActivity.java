@@ -1,12 +1,16 @@
 package com.example.gf_daniel.mioapp;
+
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.webkit.ConsoleMessage;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -25,28 +29,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-public class TrayectoActivity extends AppCompatActivity  {
+public class TrayectoActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
     private static final int RECORD_REQUEST_CODE = 101;
+
     @BindView(R.id.status)
     TextView status;
     @BindView(R.id.textMessage)
     TextView textMessage;
 
+    private LocationManager ubicacion;
 
-    String url = "https://www.google.com/maps/dir/?api=1&origin=Pontificia+Universidad+Javeriana+Cali&destination=00002+Cali+Colombia&travelmode=transit";
+    String url = "https://www.google.com/maps/dir/?api=1&origin=00003&destination=00002+Cali+Colombia&travelmode=transit";
     String[] dir = {
             "carrera",
             "calle",
             "avenida",
             "diagonal",
-            "transversal","estacion","estación"
+            "transversal", "estacion", "estación"
     };
 
-    String tem= "0001.*";
+    String tem = "0001.*";
     String direccion;
+    String lan;
+    String lon;
     final Context context = this;
     private List<String> stringList;
     private SpeechAPI speechAPI;
@@ -90,74 +98,76 @@ public class TrayectoActivity extends AppCompatActivity  {
                             public void run() {
                                 if (isFinal) {
                                     textMessage.setText(null);
-                                    stringList.add(0,text);
+                                    stringList.add(0, text);
                                     adapter.notifyDataSetChanged();
                                     mVoiceRecorder.stop();
                                     mVoiceRecorder.dismiss();
-                                    System.out.println("error" + " "+(1-confidence));
+                                    System.out.println("error" + " " + (1 - confidence));
                                     String[] temText = text.split(" ");
-                                    if(temText.length<=3){
-                                        direccion=text;
-                                    }else{
-                                        direccion= text;
+                                    if (temText.length <= 3) {
+                                        direccion = text;
+                                    } else {
+                                        direccion = text;
                                         int bandera = 0;
-                                        while ((direccion.split(" a ")).length>1){
-                                            System.out.println("dirreccion"+direccion);
+                                        while ((direccion.split(" a ")).length > 1) {
+                                            System.out.println("dirreccion" + direccion);
                                             for (String s : dir) {
-                                                System.out.println("entro al ciclo"+s);
+                                                System.out.println("entro al ciclo" + s);
                                                 String replace = tem.replaceAll("0001", s);
-                                                System.out.println("temp"+replace);
+                                                System.out.println("temp" + replace);
                                                 if (direccion.matches(replace)) {
-                                                    System.out.println("entro aqui"+replace);
-                                                    bandera=1;
+                                                    System.out.println("entro aqui" + replace);
+                                                    bandera = 1;
                                                     break;
                                                 }
                                             }
-                                            if(bandera==1){
+                                            if (bandera == 1) {
                                                 System.out.println("entro aqui 2");
                                                 break;
-                                            }else{
-                                                String[] subText = direccion.split(" a ",2);
-                                                if(subText[1].matches("la.*")){
-                                                    direccion=subText[1];
-                                                    String[] subText1 = direccion.split("la",2);
-                                                    direccion=subText1[1];
-                                                }else{
+                                            } else {
+                                                String[] subText = direccion.split(" a ", 2);
+                                                if (subText[1].matches("la.*")) {
+                                                    direccion = subText[1];
+                                                    String[] subText1 = direccion.split("la", 2);
+                                                    direccion = subText1[1];
+                                                } else {
                                                     direccion = subText[1];
                                                 }
                                             }
                                         }
                                     }
-                                    System.out.println("dirreccion"+direccion);
+                                    System.out.println("dirreccion" + direccion);
 
 
                                     progressDialog.dismiss();
-                                    if(confidence > 0.7){
+                                    if (confidence > 0.7) {
                                         WebView myWebView = (WebView) findViewById(R.id.webViewTrayecto);
                                         WebSettings webSettings = myWebView.getSettings();
                                         webSettings.setJavaScriptEnabled(true);
                                         myWebView.setWebViewClient(new WebViewClient());
                                         String newUrl = url.replaceAll("00002", direccion);
-                                        myWebView.loadUrl(newUrl);
-                                    }else if(confidence > 0.6 && confidence<=0.7){
+                                        String cordenadas = lan+","+lon;
+                                        String newUrl2 = newUrl.replaceAll("00003", cordenadas);
+                                        myWebView.loadUrl(newUrl2);
+                                    } else if (confidence > 0.6 && confidence <= 0.7) {
                                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
                                         // set title
-                                        alertDialogBuilder.setTitle("Quieres ir a "+ direccion);
+                                        alertDialogBuilder.setTitle("Quieres ir a " + direccion);
 
                                         // set dialog message
                                         alertDialogBuilder
-                                                .setMessage("teniendo en cuenta que el % de error es  "+ (1-confidence));
+                                                .setMessage("teniendo en cuenta que el % de error es  " + (1 - confidence));
                                         // create alert dialog
                                         AlertDialog alertDialog = alertDialogBuilder.create();
 
                                         // show it
                                         alertDialog.show();
-                                    }else{
+                                    } else {
                                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                                         // set title
                                         alertDialogBuilder.setTitle("Intentalo de nuevo");
-                                                // set dialog message
+                                        // set dialog message
                                         alertDialogBuilder
                                                 .setMessage("");
                                         // create alert dialog
@@ -177,7 +187,7 @@ public class TrayectoActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        progressDialog= new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Escuchando");
         progressDialog.show();
         super.onCreate(savedInstanceState);
@@ -209,6 +219,7 @@ public class TrayectoActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
+        getLocation();
         if (isGrantedPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             startVoiceRecorder();
         } else {
@@ -237,6 +248,22 @@ public class TrayectoActivity extends AppCompatActivity  {
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
             mVoiceRecorder = null;
+        }
+    }
+
+    public void getLocation(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION
+            },1000);
+        }
+        ubicacion = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location loc = ubicacion.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(ubicacion != null){
+            lan = Double.toString(loc.getLatitude());
+            lon = Double.toString(loc.getLongitude());
+            System.out.println("lan"+loc.getLatitude());
+            System.out.println("lon"+loc.getLongitude());
         }
     }
 
