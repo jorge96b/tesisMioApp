@@ -96,27 +96,22 @@ public class TrayectoActivity extends AppCompatActivity  {
                                     mVoiceRecorder.dismiss();
                                     System.out.println("error" + " "+(1-confidence));
                                     String[] temText = text.split(" ");
-                                    if(temText.length<=3){
+                                    if(temText.length<=2){
                                         direccion=text;
                                     }else{
                                         direccion= text;
                                         int bandera = 0;
-                                        while ((direccion.split(" a ")).length>1){
-                                            System.out.println("dirreccion"+direccion);
+                                        while (((direccion.split(" a ")).length>1) || (direccion.split(" al ").length>1 )){
                                             for (String s : dir) {
-                                                System.out.println("entro al ciclo"+s);
                                                 String replace = tem.replaceAll("0001", s);
-                                                System.out.println("temp"+replace);
                                                 if (direccion.matches(replace)) {
-                                                    System.out.println("entro aqui"+replace);
                                                     bandera=1;
                                                     break;
                                                 }
                                             }
                                             if(bandera==1){
-                                                System.out.println("entro aqui 2");
                                                 break;
-                                            }else{
+                                            }else if((direccion.split(" a ")).length>1) {
                                                 String[] subText = direccion.split(" a ",2);
                                                 if(subText[1].matches("la.*")){
                                                     direccion=subText[1];
@@ -125,12 +120,13 @@ public class TrayectoActivity extends AppCompatActivity  {
                                                 }else{
                                                     direccion = subText[1];
                                                 }
+                                            }else if((direccion.split(" al ")).length>1) {
+                                                String[] subText = direccion.split(" al ",2);
+                                                direccion = subText[1];
                                             }
                                         }
                                     }
                                     System.out.println("dirreccion"+direccion);
-
-
                                     progressDialog.dismiss();
                                     if(confidence > 0.7){
                                         WebView myWebView = (WebView) findViewById(R.id.webViewTrayecto);
